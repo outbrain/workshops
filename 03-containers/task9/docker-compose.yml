@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  www:
+    # Build the image defined in the Dockerfile (see reference for other options!)
+    build: .
+    ports:
+      # Expose ports so that they are available from localhost (from our host machine)
+      # Local port may be overriden using the PORT variable, but will be 8000 by default
+      - ${PORT-8000}:5000
+    # Run as this user...
+    user: nobody
+    # Add additional environmental variables to the running container
+    environment:
+      DEBUG: 1
+    # Override the run command, for easier debuging.
+    command: python counter.py
+    # Mount source folder over to the container to ease development.
+    # Changes done locally are immediately visible in the container!
+    volumes:
+      - ./src:/src
+
+  # No need to expose anything, since redis container will be put in the same network,
+  # and compose is smart enough to advertise the name "redis" in the dns.
+  redis:
+    # Simply take existing image from upstream, no need to build anything.
+    image: redis
